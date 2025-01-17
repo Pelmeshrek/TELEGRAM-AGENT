@@ -1,0 +1,334 @@
+# -*- coding: utf-8 -*-
+import asyncio
+import logging
+import sys
+import io
+import datetime
+import json
+import requests
+
+from telethon.tl.types import Channel
+from telethon import TelegramClient, events
+from telethon.errors import (
+    SessionPasswordNeededError,
+    PhoneCodeInvalidError,
+    PhoneNumberInvalidError
+)
+
+# ------------------------------------------------------------------
+# Настройки вывода, чтобы корректно обрабатывалась кириллица
+# ------------------------------------------------------------------
+sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8')
+
+# ------------------------------------------------------------------
+# Параметры и константы
+# ------------------------------------------------------------------
+
+api_id = 'you tg id'   # Ваш API_ID
+api_hash = 'your api hash'  # Ваш API_HASH
+UNIFIED_SESSION_NAME = 'unified_session_name'  # Имя сессии для Telethon
+
+# URL Ollama (локальный сервер)
+OLLAMA_API_URL = "http://localhost:11434/api/generate"
+OLLAMA_MODEL = "phi4:latest"
+
+# ID владельца бота (вам будут отправляться сводки)
+BOT_OWNER_ID = your id
+
+# Каждые N минут будет отправляться сводка
+SUMMARY_INTERVAL_SECONDS = 60*20
+
+# ------------------------------------------------------------------
+# Промпты для Ollama
+# ------------------------------------------------------------------
+
+# Промпт для «секретаря»
+SYSTEM_PROMPT = """
+промт для ответа на сообщения
+promt for responding to messages
+"""
+
+# Промпт для сводки
+SUMMARY_SYSTEM_PROMPT = """
+Ты — бот-анализатор для внутреннего использования. Каждые N минут тебе дают список свежих сообщений
+You are a bot analyzer for internal use. Every N minutes you are given a list of fresh messages.
+"""
+
+# ------------------------------------------------------------------
+# Дополнительные настройки
+# ------------------------------------------------------------------
+
+# Максимальное количество сообщений в истории для «секретаря»
+MAX_CONTEXT_LENGTH = 5
+
+# Словарь для хранения контекста (истории) ответов «секретаря»
+# Формат: {user_id: [{"role": "user", "content": "..."},
+#                   {"role": "assistant", "content": "..."}]}
+user_contexts = {}
+
+# Список ID пользователей, которым не отвечаем
+IGNORED_USER_IDS = [123456789, 987654321]
+
+# Список username, которым не отвечаем
+IGNORED_USERNAMES = ["mariamelikhovad", "FOIGFBH", "Anessso"]
+
+# Список (буфер) новых сообщений для сводки
+new_messages_buffer = []
+my_id = your id
+# Лимит на количество сообщений, которые отдаём в сводку (чтобы не перегружать модель)
+MAX_MESSAGES_IN_SUMMARY = 100
+
+# Логирование
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# Инициализация Telethon-клиента
+client = TelegramClient(UNIFIED_SESSION_NAME, api_id, api_hash)
+
+
+# ------------------------------------------------------------------
+# Функции для работы с Ollama (ответы «секретаря» и сводка)
+# ------------------------------------------------------------------
+
+async def generate_response(prompt, user_id, model=OLLAMA_MODEL):
+    """
+    Генерация ответа при помощи Ollama (логика «секретаря»).
+    """
+    headers = {"Content-Type": "application/json"}
+    context = user_contexts.get(user_id, [])
+
+    # Собираем полный промпт
+    full_prompt = f"{SYSTEM_PROMPT}\n"
+
+    # Добавляем последние сообщения (для контекста)
+    if context:
+        full_prompt += "\nПоследние сообщения для контекста:\n"
+        for msg in context[-MAX_CONTEXT_LENGTH:]:
+            if msg["role"] == "user":
+                full_prompt += f"Я: {msg['content']}\n"
+            else:
+                full_prompt += f"Ты: {msg['content']}\n"
+
+    full_prompt += f"Я: {prompt}\nТы: "
+
+    data = {
+        "model": model,
+        "prompt": full_prompt,
+        "stream": False
+    }
+
+    try:
+        response = requests.post(OLLAMA_API_URL, headers=headers, data=json.dumps(data), timeout=120)
+        response.raise_for_status()
+        response_json = response.json()
+
+        if response_json.get("done"):
+            if "response" in response_json:
+                # Сохраняем историю
+                user_contexts.setdefault(user_id, []).append({"role": "user", "content": prompt})
+                user_contexts[user_id].append({"role": "assistant", "content": response_json["response"]})
+                return response_json["response"]
+            else:
+                return "Ошибка: Некорректный ответ от Ollama."
+        else:
+            return "Ошибка: Генерация не завершена."
+    except requests.exceptions.RequestException as e:
+        return f"Ошибка при запросе к Ollama: {e}"
+    except Exception as e:
+        return f"Неизвестная ошибка: {e}"
+
+
+def summarize_messages_with_ollama(messages):
+    """
+    Отправляет список сообщений в модель Ollama для краткого резюме (сводки).
+    """
+    # Обрезаем число сообщений
+    messages_to_summarize = messages[:MAX_MESSAGES_IN_SUMMARY]
+
+    # Превращаем список сообщений в строку
+    messages_text = "\n".join(
+        f"• [{m['chat_title'] or 'ЛС/группа'}] {m['sender_name']}: {m['text']}"
+        for m in messages_to_summarize
+    )
+
+    # Собираем полный промпт
+    full_prompt = (
+        f"{SUMMARY_SYSTEM_PROMPT}\n\n"
+        f"Вот новые сообщения:\n\n"
+        f"{messages_text}\n\n"
+        f"Кратко опиши, о чём речь в сообщениях:\n"
+    )
+
+    payload = {
+        "model": OLLAMA_MODEL,
+        "prompt": full_prompt,
+        "stream": False
+    }
+
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        response = requests.post(OLLAMA_API_URL, headers=headers, data=json.dumps(payload), timeout=120)
+        response.raise_for_status()
+        response_json = response.json()
+
+        if response_json.get("done") and "response" in response_json:
+            return response_json["response"]
+        else:
+            return "Ошибка: модель не вернула корректный результат."
+    except requests.exceptions.RequestException as e:
+        return f"Ошибка при запросе к Ollama: {e}"
+
+
+# ------------------------------------------------------------------
+# Обработчики событий (Handlers)
+# ------------------------------------------------------------------
+
+@client.on(events.NewMessage(incoming=True))
+async def handle_secretary(event):
+    """
+    Обработчик «секретаря»: отвечает пользователям в приватном чате
+    (если они не в игнор-листе).
+    """
+    if event.is_private:
+        user_id = event.sender_id
+        user_entity = await client.get_entity(user_id)
+        username = user_entity.username if user_entity.username else "NoUsername"
+        user_message = event.raw_text
+
+        # Проверяем, игнорируем ли пользователя
+        if user_id in IGNORED_USER_IDS or username in IGNORED_USERNAMES:
+            logger.info(f"Пользователь {user_id} (username: {username}) в игнор-листе. Не отвечаем.")
+            return
+
+        # Генерируем ответ с помощью Ollama
+        response_text = await generate_response(user_message, user_id)
+
+        # Отправляем ответ
+        try:
+            await event.reply(response_text)
+            logger.info("Ответ секретаря отправлен пользователю.")
+        except Exception as e:
+            logger.error(f"Ошибка при отправке сообщения: {e}")
+
+
+@client.on(events.NewMessage)
+async def handle_summary_collection(event):
+    global my_id
+    if my_id is None:
+        me = await client.get_me()
+        my_id = me.id
+
+    sender = await event.get_sender()
+    if sender.id == my_id:
+        return  # пропускаем собственные сообщения бота
+
+    # Обработка имени отправителя
+    if isinstance(sender, Channel):
+        sender_name = getattr(sender, 'title', "Канал без названия")
+    else:
+        sender_name = sender.username if sender.username else (sender.first_name or "Неизвестный пользователь")
+
+    # Получаем название чата
+    if event.is_group or event.is_channel:
+        chat = await event.get_chat()
+        chat_title = getattr(chat, 'title', "Группа/Канал без названия")
+    else:
+        chat_title = None
+
+    message_text = event.raw_text
+
+    new_messages_buffer.append({
+        "dt": datetime.datetime.now(),
+        "sender_id": sender.id,
+        "sender_name": sender_name,
+        "chat_title": chat_title,
+        "text": message_text
+    })
+
+
+# ------------------------------------------------------------------
+# Периодическая задача для сводки
+# ------------------------------------------------------------------
+
+async def summary_loop():
+    """
+    Бесконечный цикл: каждые SUMMARY_INTERVAL_SECONDS формируем сводку
+    из new_messages_buffer и отправляем её владельцу бота (BOT_OWNER_ID).
+    """
+    while True:
+        await asyncio.sleep(SUMMARY_INTERVAL_SECONDS)
+
+        if not new_messages_buffer:
+            logger.info("Нет новых сообщений, сводка не сформирована.")
+            continue
+
+        # Копируем и очищаем глобальный буфер
+        messages_to_summarize = new_messages_buffer.copy()
+        new_messages_buffer.clear()
+
+        # Генерируем сводку
+        summary_text = summarize_messages_with_ollama(messages_to_summarize)
+
+        # Отправляем результат владельцу бота
+        try:
+            await client.send_message(BOT_OWNER_ID, summary_text)
+            logger.info("Сводка отправлена владельцу бота.")
+        except Exception as e:
+            logger.error(f"Не удалось отправить сводку: {e}")
+
+
+# ------------------------------------------------------------------
+# Функция авторизации
+# ------------------------------------------------------------------
+
+async def login():
+    """
+    Авторизация в Telegram через Telethon.
+    """
+    try:
+        await client.connect()
+        if not await client.is_user_authorized():
+            phone = input("Введите номер телефона (пример: +71234567890): ")
+            try:
+                await client.send_code_request(phone)
+                code = input("Введите код из Telegram: ")
+                await client.sign_in(phone, code)
+            except SessionPasswordNeededError:
+                password = input("Введите пароль двухфакторной аутентификации: ")
+                await client.sign_in(password=password)
+            except PhoneCodeInvalidError:
+                logger.error("Введён неверный код подтверждения.")
+                return False
+            except PhoneNumberInvalidError:
+                logger.error("Введён неверный номер телефона.")
+                return False
+        logger.info("Успешно авторизованы в Telegram!")
+        return True
+    except Exception as e:
+        logger.error(f"Ошибка при авторизации: {e}")
+        return False
+
+
+# ------------------------------------------------------------------
+# Основная функция
+# ------------------------------------------------------------------
+
+async def main():
+    authorized = await login()
+    if not authorized:
+        return
+
+    # Запускаем фоновую задачу по сбору сводки
+    asyncio.create_task(summary_loop())
+
+    logger.info("Единый бот запущен. Ожидаем сообщения...")
+    await client.run_until_disconnected()
+
+
+# Запуск
+if __name__ == "__main__":
+    asyncio.run(main())

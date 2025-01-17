@@ -26,6 +26,12 @@ sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8')
 # Parameters and constants
 # ------------------------------------------------------------------
 
+my_id = 'yourid'  # Used to skip our own messages in the summary handler
+
+# Лимит на количество сообщений, которые отдаём в сводку (чтобы не перегружать модель)
+# Limit of messages for the summary (avoid overloading the model)
+MAX_MESSAGES_IN_SUMMARY = 100
+
 api_id = 'yourid'   # Ваш API_ID (Your Telegram API_ID)
 api_hash = 'yourhash'  # Ваш API_HASH (Your Telegram API_HASH)
 UNIFIED_SESSION_NAME = 'unified_session_name'  # Имя сессии для Telethon (Telethon session name)
@@ -88,11 +94,6 @@ IGNORED_USERNAMES = ["", "", ""]
 # Список (буфер) новых сообщений для сводки
 # Buffer with new messages for summary
 new_messages_buffer = []
-my_id = 'yourid'  # Used to skip our own messages in the summary handler
-
-# Лимит на количество сообщений, которые отдаём в сводку (чтобы не перегружать модель)
-# Limit of messages for the summary (avoid overloading the model)
-MAX_MESSAGES_IN_SUMMARY = 100
 
 # Логирование
 # Logging configuration

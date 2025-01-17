@@ -1,6 +1,9 @@
 Всем здравсвтуйте. Не судите строго, я школьник, мне 16 и это мой первый "проект" связанный с ИИ-агентами
 Это моя работа, но код в большей степени написан openai o1 и Google Gemini
 
+ИИ-агент отвечает на сообщения, написанные в личных сообщениях, в выбранном стиле, заданном в переменной SYSTEM_PROMPT.
+ИИ-агент отправляет краткую сводку во вкладку «Избранное», отредактированную в соответствии с переменной SUMMARY_SYSTEM_PROMPT.
+
 кто хочет меня поддержать, вот адресс кошелька usd (ton): UQAJ-cXeMPyzrvu3W2ZJ1bj3fL4Y4D7cQeJGknH__NL4nvpg
 
 Вот инструкция:
@@ -14,8 +17,11 @@
 --------------------------------------------------------------------------------------------------------------------------------------------
 
 Hello everyone! Please don't judge me too harshly—I'm a high school student, 16 years old, and this is my first "project" related to AI agents. 
-
 This is my work, although most of the code was written by OpenAI O1 and Google Gemini.
+
+
+The AI agent responds to messages written in private chats in the selected style defined by the SYSTEM_PROMPT variable.
+The AI agent sends a brief summary to the "Favorites" tab, edited according to the SUMMARY_SYSTEM_PROMPT variable.
 
 If you'd like to support me, here is my USD (TON) wallet address: UQAJ-cXeMPyzrvu3W2ZJ1bj3fL4Y4D7cQeJGknH__NL4nvpg
 

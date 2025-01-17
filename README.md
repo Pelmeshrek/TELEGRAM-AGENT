@@ -4,6 +4,8 @@
 ИИ-агент отвечает на сообщения, написанные в личных сообщениях, в выбранном стиле, заданном в переменной SYSTEM_PROMPT.
 ИИ-агент отправляет краткую сводку во вкладку «Избранное», отредактированную в соответствии с переменной SUMMARY_SYSTEM_PROMPT.
 
+Все переменные в коде названы понятно, так что вопросов о том, куда и что вводить, у вас не должно возникнуть.
+
 кто хочет меня поддержать, вот адресс кошелька usd (ton): UQAJ-cXeMPyzrvu3W2ZJ1bj3fL4Y4D7cQeJGknH__NL4nvpg
 
 Вот инструкция:
@@ -22,6 +24,8 @@ This is my work, although most of the code was written by OpenAI O1 and Google G
 
 The AI agent responds to messages written in private chats in the selected style defined by the SYSTEM_PROMPT variable.
 The AI agent sends a brief summary to the "Favorites" tab, edited according to the SUMMARY_SYSTEM_PROMPT variable.
+
+All variables in the code are clearly named, so you shouldn't have any questions about where and what to enter.
 
 If you'd like to support me, here is my USD (TON) wallet address: UQAJ-cXeMPyzrvu3W2ZJ1bj3fL4Y4D7cQeJGknH__NL4nvpg
 

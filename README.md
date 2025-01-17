@@ -8,7 +8,7 @@
 2) как скачается в Windows Powershell пишите команду `ollama run (ваша модель)`.
 3) затем пишите `ollama serve` и в целом первая часть готова (ну у меня проблем не было).
 4) устанавливаете библиотеки, получаете Ваши api и тп аккаунта телеграм (инструкцию на это давать не буду).
-5) авторизуетесь, как запустите код и все работает!
+5) авторизуетесь, как запустите код и все работает! (телефоный номер, код который пришел Вам в тг, и пароль если есть)
 6) сводка приходит в избранные.
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -24,5 +24,5 @@ Here are the instructions:
 2. Once downloaded, open Windows PowerShell and run the command: `ollama run <your_model>`.  
 3. Then, type `ollama serve`, and the first part is complete (I didn't encounter any issues here).  
 4. Install the necessary libraries, get your Telegram account API, and so on (I won’t provide instructions for this step).  
-5. Authorize your account, run the code, and everything should work!
+5. Authorize your account, run the code, and everything should work! (phone number, the code you received in Telegram, and the password if applicable)
 6. the summary is sent to saved messages.

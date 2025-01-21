@@ -1,6 +1,8 @@
 Всем здравсвтуйте. Не судите строго, я школьник, мне 16, и это мой первый "проект", связанный с ИИ-агентами.
 Это моя работа, но код в большей степени написан openai o1 и Google Gemini.
 
+Bot-Manager это бот, который будет отвечать на сообщения в заданном стиле и отправлять сводку написавшему.
+
 ИИ-агент отвечает на сообщения, написанные в личных сообщениях, в выбранном стиле, заданном в переменной SYSTEM_PROMPT.
 ИИ-агент отправляет краткую сводку во вкладку «Избранное», отредактированную в соответствии с переменной SUMMARY_SYSTEM_PROMPT.
 
@@ -21,6 +23,7 @@
 Hello everyone! Please don't judge me too harshly—I'm a high school student, 16 years old, and this is my first "project" related to AI agents. 
 This is my work, although most of the code was written by OpenAI O1 and Google Gemini.
 
+Bot-Manager is a bot that responds to messages in a specified style and sends a summary to the user who wrote them.
 
 The AI agent responds to messages written in private chats in the selected style defined by the SYSTEM_PROMPT variable.
 The AI agent sends a brief summary to the "Favorites" tab, edited according to the SUMMARY_SYSTEM_PROMPT variable.

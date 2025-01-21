@@ -41,10 +41,6 @@ UNIFIED_SESSION_NAME = 'unified_session_name'  # Имя сессии для Tele
 OLLAMA_API_URL = "http://localhost:11434/api/generate"
 OLLAMA_MODEL = "phi4:latest"
 
-# ID владельца бота (вам будут отправляться сводки)
-# Bot owner's ID (will receive summaries)
-BOT_OWNER_ID = 'yourid'
-
 # Каждые n минут будет отправляться сводка
 # Summary sending interval (in seconds)
 SUMMARY_INTERVAL_SECONDS = 60*20
@@ -290,9 +286,9 @@ async def handle_summary_collection(event):
 async def summary_loop():
     """
     Бесконечный цикл: каждые SUMMARY_INTERVAL_SECONDS формируем сводку
-    из new_messages_buffer и отправляем её владельцу бота (BOT_OWNER_ID).
+    из new_messages_buffer и отправляем её владельцу.
     Infinite loop: every SUMMARY_INTERVAL_SECONDS, generate a summary
-    from new_messages_buffer and send it to the bot owner (BOT_OWNER_ID).
+    from new_messages_buffer and send it to you.
     """
     while True:
         await asyncio.sleep(SUMMARY_INTERVAL_SECONDS)
@@ -312,8 +308,8 @@ async def summary_loop():
         # Отправляем результат владельцу бота
         # Send the result to the bot owner
         try:
-            await client.send_message(BOT_OWNER_ID, summary_text)
-            logger.info("Сводка отправлена владельцу бота.")
+            await client.send_message(summary_text)
+            logger.info("Сводка отправлена владельцу.")
         except Exception as e:
             logger.error(f"Не удалось отправить сводку: {e}")
 

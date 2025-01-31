@@ -1,5 +1,5 @@
 Всем здравсвтуйте. Не судите строго, я школьник, мне 16, и это мой первый "проект", связанный с ИИ-агентами.
-Это моя работа, но код в большей степени написан openai o1 и Google Gemini.
+Это моя работа, но некоторые фрагменты были сделанны с помощью openai o1 и Google Gemini.
 
 Bot-Manager это бот, который будет отвечать на сообщения в заданном стиле и отправлять сводку написавшему.
 
@@ -7,8 +7,6 @@ Bot-Manager это бот, который будет отвечать на со�
 ИИ-агент отправляет краткую сводку во вкладку «Избранное», отредактированную в соответствии с переменной SUMMARY_SYSTEM_PROMPT.
 
 Все переменные в коде названы понятно, так что вопросов о том, куда и что вводить, у вас не должно возникнуть.
-
-кто хочет меня поддержать, вот адресс кошелька usd (ton): UQAJ-cXeMPyzrvu3W2ZJ1bj3fL4Y4D7cQeJGknH__NL4nvpg
 
 Вот инструкция:
 1) скачиваете подходящую Вам модель с сайта https://ollama.com/ (в моем случа phi4).
@@ -21,7 +19,7 @@ Bot-Manager это бот, который будет отвечать на со�
 --------------------------------------------------------------------------------------------------------------------------------------------
 
 Hello everyone! Please don't judge me too harshly—I'm a high school student, 16 years old, and this is my first "project" related to AI agents. 
-This is my work, although most of the code was written by OpenAI O1 and Google Gemini.
+This is my work, but some parts of the code was written by OpenAI O1 and Google Gemini.
 
 Bot-Manager is a bot that responds to messages in a specified style and sends a summary to the user who wrote them.
 
@@ -29,8 +27,6 @@ The AI agent responds to messages written in private chats in the selected style
 The AI agent sends a brief summary to the "Favorites" tab, edited according to the SUMMARY_SYSTEM_PROMPT variable.
 
 All variables in the code are clearly named, so you shouldn't have any questions about where and what to enter.
-
-If you'd like to support me, here is my USD (TON) wallet address: UQAJ-cXeMPyzrvu3W2ZJ1bj3fL4Y4D7cQeJGknH__NL4nvpg
 
 Here are the instructions:  
 1. Download a model that suits you from the website https://ollama.com/ (in my case, phi4).  

@@ -1,80 +1,168 @@
+# Bot-Manager: AI-Agent for Telegram
 
-
-
-Всем здравсвтуйте. Не судите строго, я школьник, мне 16, и это мой первый "проект", связанный с ИИ-агентами. Это моя работа, но некоторые фрагменты были сделанны с помощью openai o1 и Google Gemini.
-
-Bot-Manager это бот, который будет отвечать на сообщения в заданном стиле и отправлять сводку написавшему.
-
-ИИ-агент отвечает на сообщения, написанные в личных сообщениях, в выбранном стиле, заданном в переменной SYSTEM_PROMPT. ИИ-агент отправляет краткую сводку во вкладку «Избранное», отредактированную в соответствии с переменной SUMMARY_SYSTEM_PROMPT.
-
-Все переменные в коде названы понятно, так что вопросов о том, куда и что вводить, у вас не должно возникнуть.
-
-Вот инструкция:
-
-1. скачиваете подходящую Вам модель с сайта https://ollama.com/ (в моем случа phi4).
-
-
-2. как скачается в Windows Powershell пишите команду ollama run (ваша модель).
-
-
-3. затем пишите ollama serve и в целом первая часть готова (ну у меня проблем не было).
-
-
-4. устанавливаете библиотеки, получаете Ваши api и тп аккаунта телеграм (инструкцию на это от ЧАТА ГПТ после основной части).
-
-
-5. авторизуетесь, как запустите код и все работает! (телефоный номер, код который пришел Вам в тг, и пароль если есть)
-
-
-6. сводка приходит в избранные.
-
-
-
+Ниже вы найдёте двуязычный (русско-английский) README, который можно скопировать прямо в ваш GitHub-репозиторий. Он структурирован так, чтобы любой пользователь мог быстро разобраться, как настроить и запустить бота.
 
 ---
 
-Hello everyone! Please don't judge me too harshly—I'm a high school student, 16 years old, and this is my first "project" related to AI agents. This is my work, but some parts of the code was written by OpenAI O1 and Google Gemini.
+## Содержание (Table of Contents)
 
-Bot-Manager is a bot that responds to messages in a specified style and sends a summary to the user who wrote them.
-
-The AI agent responds to messages written in private chats in the selected style defined by the SYSTEM_PROMPT variable. The AI agent sends a brief summary to the "Favorites" tab, edited according to the SUMMARY_SYSTEM_PROMPT variable.
-
-All variables in the code are clearly named, so you shouldn't have any questions about where and what to enter.
-
-Here are the instructions:
-
-1. Download a model that suits you from the website https://ollama.com/ (in my case, phi4).
-
-
-2. Once downloaded, open Windows PowerShell and run the command: ollama run <your_model>.
-
-
-3. Then, type ollama serve, and the first part is complete (I didn't encounter any issues here).
-
-
-4. Install the necessary libraries, get your Telegram account API, and so on (Instruction from CHAT GPT is after the main part).
-
-
-5. Authorize your account, run the code, and everything should work! (phone number, the code you received in Telegram, and the password if applicable)
-
-
-6. the summary is sent to saved messages.
-
-
-
+1. [Описание проекта (Project Description)](#описание-проекта-project-description)
+2. [Возможности (Features)](#возможности-features)
+3. [Технологии (Technologies)](#технологии-technologies)
+4. [Установка и настройка (Installation and Setup)](#установка-и-настройка-installation-and-setup)
+   - [1. Загрузка модели Ollama (Downloading the Ollama Model)](#1-загрузка-модели-ollama-downloading-the-ollama-model)
+   - [2. Запуск Ollama (Running Ollama)](#2-запуск-ollama-running-ollama)
+   - [3. Установка зависимостей Python (Install Python Dependencies)](#3-установка-зависимостей-python-install-python-dependencies)
+   - [4. Telegram API (Telegram API Credentials)](#4-telegram-api-telegram-api-credentials)
+5. [Использование (Usage)](#использование-usage)
+6. [Инструкция по получению Telegram API ID и Hash (How to Get Telegram API ID and Hash)](#инструкция-по-получению-telegram-api-id-и-hash-how-to-get-telegram-api-id-and-hash)
+7. [Лицензия (License)](#лицензия-license)
+8. [Контакты и обратная связь (Contact and Feedback)](#контакты-и-обратная-связь-contact-and-feedback)
 
 ---
 
-Как получить Telegram API ID и API Hash / How to Get Telegram API ID and API Hash
+## Описание проекта (Project Description)
 
-1. Создайте Telegram-аккаунт / Create a Telegram Account Убедитесь, что у вас есть зарегистрированный аккаунт в Telegram, так как API-ключи связаны с вашим профилем. Make sure you have a registered Telegram account, as the API keys are tied to your profile.
+**Bot-Manager** — это Telegram-бот, который:
+1. Отвечает на личные сообщения в заданном стиле (определяется переменной `SYSTEM_PROMPT`).
+2. Отправляет краткую сводку (summary) в «Избранное» (Saved Messages), где формат сводки определяется переменной `SUMMARY_SYSTEM_PROMPT`.
 
+Основной механизм работы — взаимодействие с локально развернутой моделью через [Ollama](https://ollama.com/). Вы задаёте стиль ответа и вид получаемой сводки, а бот автоматически отвечает на входящие сообщения.
 
-2. Войдите на Telegram Developers Platform / Log in to Telegram Developers Platform
+---
 
+## Возможности (Features)
 
+- **Гибкая настройка ответа**: Задавайте стиль, тон и формат AI-ответов.
+- **Автоматическая отправка сводки**: Bot-Manager формирует краткий обзор (summary) и пересылает его в «Избранное».
+- **Локальная модель**: Для генерации ответов используется модель, запущенная на вашем компьютере через [Ollama](https://ollama.com/), что обеспечивает большую приватность и контроль над процессом.
+- **Поддержка нескольких языков**: Код можно адаптировать как под русский, так и под английский язык (и не только).
 
-Перейдите на сайт https://my.telegram.org/. Go to https://my.telegram.org/. Войдите, используя свой номер телефона, привязанный к Telegram. Log in using your phone number linked to Telegram. Введите код, который придёт вам в Telegram. Enter the code sent to you via Telegram. 3. Создайте новое приложение / Create a New Application На главной странице выберите "API Development Tools". On the main page, select "API Development Tools". Заполните форму: Fill in the form: App title: Укажите название вашего приложения (например, MyApp). Enter the name of your app (e.g., MyApp). Short name: Укажите краткое название (например, myapp). Enter a short name (e.g., myapp). Остальные поля заполняются автоматически, но вы можете указать дополнительные данные. The other fields are filled in automatically, but you can add extra information. Нажмите Create Application. Click Create Application. 4. Получите свои API ID и API Hash / Retrieve Your API ID and API Hash После создания приложения вам будут выданы: After creating the application, you will be provided with:
+---
 
-API ID (например, 12345678) / API ID (e.g., 12345678) API Hash (например, abc123def456ghi789jkl) / API Hash (e.g., abc123def456ghi789jkl) 5. Сохраните эти данные / Save These Details Запишите API ID и API Hash в безопасное место. Эти данные необходимы для работы с Telegram API через сторонние библиотеки, такие как Telethon или Pyrogram. Save the API ID and API Hash in a secure place. These details are required to work with Telegram API via third-party libraries like Telethon or Pyrogram.
+## Технологии (Technologies)
 
+- **Python** (3.9+)
+- **Telethon** или **Pyrogram** (для взаимодействия с Telegram API)
+- **[Ollama](https://ollama.com/)** (для запуска локальной модели)
+- **OpenAI O1** / **Google Gemini** (опционально, если интеграция нужна для дополнительных функций)
+
+---
+
+## Установка и настройка (Installation and Setup)
+
+Ниже описаны шаги по установке и первичному запуску бота:
+
+### 1. Загрузка модели Ollama (Downloading the Ollama Model)
+
+1. Перейдите на сайт [Ollama](https://ollama.com/) и скачайте подходящую модель.  
+   *Пример:* Выбираем модель **phi4**.
+
+2. Сохраните модель в удобном для вас месте. Запомните путь к файлу модели (или имя модели, если Ollama сохраняет её в дефолтном каталоге).
+
+### 2. Запуск Ollama (Running Ollama)
+
+1. Откройте **Windows PowerShell** или другую консоль.
+2. Выполните команду:
+   ```bash
+   ollama run <имя_вашей_модели>
+   ```
+   Замените `<имя_вашей_модели>` на конкретное имя (например, `phi4`).
+3. После проверки работы модели завершите процесс и запустите службу Ollama:
+   ```bash
+   ollama serve
+   ```
+   Это позволит боту обращаться к модели через локальный сервер.
+
+### 3. Установка зависимостей Python (Install Python Dependencies)
+
+1. Убедитесь, что у вас установлен **Python 3.9+** (в идеале — последняя версия).
+2. Склонируйте или скачайте данный репозиторий.
+3. В корне проекта создайте виртуальное окружение (рекомендуется):
+   ```bash
+   python -m venv venv
+   source venv/bin/activate   # Для Linux/Mac
+   # или
+   venv\Scripts\activate      # Для Windows
+   ```
+4. Установите зависимости:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+### 4. Telegram API (Telegram API Credentials)
+
+1. Получите **API ID** и **API Hash**, следуя инструкции [ниже](#инструкция-по-получению-telegram-api-id-и-hash-how-to-get-telegram-api-id-and-hash).
+2. Создайте в корне проекта `.env` файл или используйте любой другой способ хранения переменных окружения. Добавьте в него:
+   ```
+   API_ID=123456
+   API_HASH=abc123def456
+   PHONE=+1234567890
+   ```
+   *(PHONE — ваш номер телефона, привязанный к Telegram)*
+
+---
+
+## Использование (Usage)
+
+1. Запустите Ollama:
+   ```bash
+   ollama serve
+   ```
+2. Запустите Python-скрипт:
+   ```bash
+   python main.py
+   ```
+   *или любое другое название вашего основного бота-файла.*
+3. При первом запуске Telegram-библиотека (Telethon или Pyrogram) запросит авторизацию:
+   - Введите **номер телефона**.
+   - Введите **код**, полученный в Telegram.
+   - (Если у вас есть **пароль**, введите его тоже.)
+4. После успешной авторизации бот будет автоматически:
+   - Отвечать на **личные сообщения** согласно вашему `SYSTEM_PROMPT`.
+   - Отправлять сводку в «Избранное» в соответствии с `SUMMARY_SYSTEM_PROMPT`.
+
+---
+
+## Инструкция по получению Telegram API ID и Hash (How to Get Telegram API ID and Hash)
+
+1. **Создайте Telegram-аккаунт**  
+   Убедитесь, что у вас есть зарегистрированный аккаунт в Telegram.
+
+2. **Зайдите на Telegram Developers Platform**  
+   Перейдите на сайт [my.telegram.org](https://my.telegram.org/).  
+   Введите номер телефона, к которому привязан ваш Telegram.  
+   Введите код, полученный в Telegram.
+
+3. **Создайте новое приложение**  
+   - На главной странице выберите **API Development Tools**.  
+   - Заполните форму:  
+     - **App title**: (напр. MyApp)  
+     - **Short name**: (напр. myapp)  
+   - Нажмите **Create Application**.
+
+4. **Получите свои API ID и API Hash**  
+   После создания приложения будут доступны:  
+   - **API ID** (например, `12345678`)  
+   - **API Hash** (например, `abc123def456ghi789jkl`)
+
+5. **Сохраните эти данные**  
+   Вам понадобятся эти значения для подключения к Telegram API.
+
+---
+
+## Лицензия (License)
+
+Данный проект распространяется по свободной лицензии на ваше усмотрение (MIT, Apache 2.0 и т.д.). В репозитории можно добавить соответствующий лицензионный файл, если это необходимо.
+
+---
+
+## Контакты и обратная связь (Contact and Feedback)
+
+- **Автор:** [@YourTelegramUsername](https://t.me/YourTelegramUsername)  
+- **GitHub:** [YourGitHubProfile](https://github.com/YourGitHubProfile)  
+- Любые вопросы, предложения или найденные ошибки присылайте в **Issues** репозитория или в личные сообщения.
+
+---
+
+**Спасибо за использование Bot-Manager!** Если этот проект оказался полезным, не забудьте поставить звёздочку на GitHub, чтобы поддержать его развитие. Good luck and have fun!

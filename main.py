@@ -26,14 +26,14 @@ sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8')
 # Parameters and constants
 # ------------------------------------------------------------------
 
-my_id = '408720026'  # Used to skip our own messages in the summary handler
+my_id = '123123123'  # Used to skip our own messages in the summary handler
 
 # Лимит на количество сообщений, которые отдаём в сводку (чтобы не перегружать модель)
 # Limit of messages for the summary (avoid overloading the model)
 MAX_MESSAGES_IN_SUMMARY = 100
 
-api_id = '24311229'   # Ваш API_ID (Your Telegram API_ID)
-api_hash = '978af72c3937476b74cbc4dc78e59630'  # Ваш API_HASH (Your Telegram API_HASH)
+api_id = '123123123'   # Ваш API_ID (Your Telegram API_ID)
+api_hash = 'abc123123'  # Ваш API_HASH (Your Telegram API_HASH)
 UNIFIED_SESSION_NAME = 'unified_session_name'  # Имя сессии для Telethon (Telethon session name)
 
 # URL Ollama (локальный сервер)
@@ -43,7 +43,7 @@ OLLAMA_MODEL = "phi4:latest"
 
 # ID владельца бота (вам будут отправляться сводки)
 # Bot owner's ID (will receive summaries)
-BOT_OWNER_ID = 408720026 #int my_id
+BOT_OWNER_ID = 123123123 #int my_id
 
 # Каждые n минут будет отправляться сводка
 # Summary sending interval (in seconds)
